@@ -24,5 +24,4 @@ use utf8;
     like $@, qr/APIキーが指定されていないか、値が不正です/, "api_key";
 }
 
-
 done_testing();

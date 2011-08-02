@@ -8,12 +8,11 @@ use Carp;
 use Class::Accessor::Lite (
     rw => [ qw/furl xmls mail passwd api_key auth_key/ ],
 );
+use WebService::TINAMI::Content;
 
 our $VERSION = '0.01';
 
 my $TINAMI_API = "http://api.tinami.com";
-my $TINAMI_AUTH = $TINAMI_API . "/auth";
-my $TINAMI_LOGIN_INFO = $TINAMI_API . "/login/info";
 
 sub new {
     my ($class, $args) = @_;
@@ -37,10 +36,32 @@ sub new {
     return $self;
 }
 
+sub api_base           { $TINAMI_API }
+sub auth_api           { shift->api_base . "/auth" }
+sub login_info_api     { shift->api_base . "/login/info" }
+sub content_search_api { shift->api_base . "/content/search" }
+sub _args { 
+    +{ 
+        mail    => $_[0]->{mail},
+        passwd  => $_[0]->{passwd},
+        api_key => $_[0]->{api_key}
+    }
+}
+
+sub content { WebService::TINAMI::Content->new(shift->_args) }
+sub search  { shift->content->search(@_) }
+
+sub _relogin {
+    my $self = shift;
+    if ($self->_is_expired_api) {
+        $self->_login;
+    }
+}
+
 sub _login {
     my $self = shift;
 
-    my $res = $self->furl->post($TINAMI_AUTH, [], 
+    my $res = $self->furl->post($self->auth_api, [], 
         [ email => $self->mail, password => $self->passwd, api_key => $self->api_key ] );
     unless ($res->is_success) {
         croak $res->status;
@@ -56,11 +77,9 @@ sub _login {
     }
 }
 
-sub info {
+sub login_info {
     my $self = shift;
-    if ($self->_is_expired_api) {
-        $self->_login;
-    }
+    $self->_relogin;
 
     my $res = $self->_info;
     my $ref = $self->xmls->XMLin($res->content);
@@ -80,7 +99,7 @@ sub _is_expired_api {
 
 sub _info {
     my $self = shift;
-    return $self->furl->get($TINAMI_LOGIN_INFO, [],
+    return $self->furl->get($self->login_info_api, [],
         [ api_key => $self->api_key, auth_key => $self->auth_key ],
     );
 }
