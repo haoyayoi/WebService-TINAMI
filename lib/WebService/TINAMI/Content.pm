@@ -3,7 +3,7 @@ package WebService::TINAMI::Content;
 use strict;
 use warnings;
 use utf8;
-use base qw(WebService::TINAMI);
+use base qw(WebService::TINAMI::Core);
 
 our $VERSION = '0.01';
 
