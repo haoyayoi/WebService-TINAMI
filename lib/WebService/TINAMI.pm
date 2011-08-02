@@ -26,7 +26,7 @@ sub new {
     my $self = bless $args, $class;
     
     my $furl = Furl->new(
-        agent   => "Net::TINAMI::Client version $VERSION",
+        agent   => "WebService::TINAMI::Client version $VERSION",
         timeout => 10,
     );
     $self->furl($furl);
@@ -90,15 +90,15 @@ __END__
 
 =head1 NAME
 
-Net::TINAMI -
+WebService::TINAMI -
 
 =head1 SYNOPSIS
 
-  use Net::TINAMI;
+  use WebService::TINAMI;
 
 =head1 DESCRIPTION
 
-Net::TINAMI is
+WebService::TINAMI is
 
 =head1 AUTHOR
 
