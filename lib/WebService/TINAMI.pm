@@ -5,13 +5,15 @@ use warnings;
 use Furl;
 use XML::Simple;
 use Carp;
-use base qw(WebService::TINAMI::Core);
+use parent qw(WebService::TINAMI::Core);
 use WebService::TINAMI::Content;
 
 our $VERSION = '0.01';
 
 sub content { WebService::TINAMI::Content->new(shift->_args) }
+
 sub search  { shift->content->search(@_) }
+
 sub login_info {
     my $self = shift;
     $self->_relogin;

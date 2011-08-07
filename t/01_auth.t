@@ -4,24 +4,24 @@ use utf8;
 
 {
     eval { WebService::TINAMI->new };
-    like $@, qr/mail/, "mail";
+    like $@, qr/Require api_key/, "mail";
 }
 
 {
     eval { WebService::TINAMI->new({ mail => 'mail' }) };
-    like $@, qr/passwd/, "passwd";
+    like $@, qr/Require api_key/, "passwd";
 }
 
 {
     eval { WebService::TINAMI->new({ mail => 'mail', passwd => 'passwd' }) };
-    like $@, qr/api_key/, "api_key";
+    like $@, qr/Require api_key/, "api_key";
 }
 
 {
-    eval { WebService::TINAMI->new({
+    my $tinami = WebService::TINAMI->new({
         mail => 'mail', passwd => 'passwd', api_key => 'key'
-    }) };
-    like $@, qr/APIキーが指定されていないか、値が不正です/, "api_key";
+    });
+    ok $tinami;
 }
 
 done_testing();

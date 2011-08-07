@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use base qw(WebService::TINAMI::Core);
-
+use Carp;
 our $VERSION = '0.01';
 
 sub search {
@@ -24,13 +24,41 @@ sub search {
     }
     $args->{'cont_type[]'} = \@cont_type if @cont_type;
  
-    $self->_relogin;
     my $res = $self->furl->get($self->content_search_api, [], $args);
     if ($res->is_success) {
         return $self->xmls->XMLin($res->content);
     }
-    else {
-        return $res->status;
+}
+
+sub info {
+    my ($self, $args) = @_;
+    if ( (not defined $args->{cont_id}) || (not $args->{cont_id} ne '') ) {
+        croak "Need content_id";
+    }
+    
+    my $res = $self->furl->get($self->content_info_api, [],
+        [
+            api_key  => $self->api_key, 
+            auth_key => $self->auth_key, 
+            cont_id  => $args->{cont_id} 
+        ]
+    );
+    if ($res->is_success) {
+        return $self->xmls->XMLin($res->content);
+    }
+}
+
+sub support {
+    my ($self, $args) = @_;
+    if ( (not defined $args->{cont_id}) || (not $args->{cont_id} ne '') ) {
+        croak "Need content_id";
+    }
+    $self->_relogin;
+    my $res = $self->furl->get($self->content_support_api, [], 
+        [ api_key => $self->api_key, auth_key => $self->auth_key, cont_id => $args->{cont_id} ]
+    );
+    if ($res->is_success) {
+        return $self->xmls->XMLin($res->content);
     }
 }
 

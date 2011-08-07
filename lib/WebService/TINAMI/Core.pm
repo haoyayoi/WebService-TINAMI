@@ -6,39 +6,37 @@ use Furl;
 use XML::Simple;
 use Carp;
 use Class::Accessor::Lite (
-    rw => [ qw/furl xmls mail passwd api_key auth_key/ ],
+    rw => [ qw/mail passwd api_key auth_key/ ],
 );
 
 our $VERSION = '0.01';
 
 my $TINAMI_API = "http://api.tinami.com";
 
-sub new {
-    my ($class, $args) = @_;
+sub xmls { XML::Simple->new }
 
-    for my $key (qw/mail passwd api_key/) {
-        if ( (not defined $args->{$key}) || (not $args->{$key} ne '') ) {
-            croak "Require $key.";
-        }
-    }
-    my $self = bless $args, $class;
-    
-    my $furl = Furl->new(
+sub furl {
+    Furl->new(
         agent   => "WebService::TINAMI::Client version $VERSION",
         timeout => 10,
     );
-    $self->furl($furl);
-    my $xmls = XML::Simple->new;
-    $self->xmls($xmls);
-    
-    $self->_login;
-    return $self;
+}
+
+sub new {
+    my ($class, $args) = @_;
+
+    if ( (not defined $args->{api_key}) || (not $args->{api_key} ne '') ) {
+        croak "Require api_key";
+    }
+    return bless $args, $class;
 }
 
 sub api_base           { $TINAMI_API }
 sub auth_api           { shift->api_base . "/auth" }
 sub login_info_api     { shift->api_base . "/login/info" }
 sub content_search_api { shift->api_base . "/content/search" }
+sub content_info_api   { shift->api_base . "/content/info" }
+sub content_support_api{ shift->api_base . "/content/support" }
 sub _args { 
     +{ 
         mail    => $_[0]->{mail},
