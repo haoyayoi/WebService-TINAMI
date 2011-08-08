@@ -24,10 +24,7 @@ sub search {
     }
     $args->{'cont_type[]'} = \@cont_type if @cont_type;
  
-    my $res = $self->furl->get($self->content_search_api, [], $args);
-    if ($res->is_success) {
-        return $self->xmls->XMLin($res->content);
-    }
+    $self->_get($self->content_search_api, [], $args);
 }
 
 sub info {
@@ -36,16 +33,13 @@ sub info {
         croak "Need content_id";
     }
     
-    my $res = $self->furl->get($self->content_info_api, [],
+    $self->_get($self->content_info_api, [],
         [
             api_key  => $self->api_key, 
             auth_key => $self->auth_key, 
             cont_id  => $args->{cont_id} 
         ]
     );
-    if ($res->is_success) {
-        return $self->xmls->XMLin($res->content);
-    }
 }
 
 sub support {
@@ -54,12 +48,9 @@ sub support {
         croak "Need content_id";
     }
     $self->_relogin;
-    my $res = $self->furl->get($self->content_support_api, [], 
+    $self->_get($self->content_support_api, [], 
         [ api_key => $self->api_key, auth_key => $self->auth_key, cont_id => $args->{cont_id} ]
     );
-    if ($res->is_success) {
-        return $self->xmls->XMLin($res->content);
-    }
 }
 
 1;

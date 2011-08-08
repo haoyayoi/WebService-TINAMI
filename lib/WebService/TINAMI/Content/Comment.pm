@@ -16,10 +16,7 @@ sub list {
         croak "Need content_id";
     }
 
-    my $res = $self->furl->get($self->list_api);
-    if ($res->is_success) {
-        return $self->xmls->XMLin($res->content);
-    }
+    $self->_get($self->list_api);
 }
 
 sub add {
@@ -29,10 +26,7 @@ sub add {
         croak "Need content_id";
     }
 
-    my $res = $self->furl->get($self->add_api);
-    if ($res->is_success) {
-        return $self->xmls->XMLin($res->content);
-    }
+    $self->_get($self->add_api);
 }
 
 sub remove {
@@ -42,10 +36,7 @@ sub remove {
         croak "Need content_id";
     }
 
-    my $res = $self->furl->get($self->remove_api);
-    if ($res->is_success) {
-        return $self->xmls->XMLin($res->content);
-    }
+    $self->_get($self->remove_api);
 }
 
 1;

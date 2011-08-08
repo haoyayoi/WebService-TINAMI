@@ -79,9 +79,15 @@ sub _is_expired_api {
 
 sub _info {
     my $self = shift;
-    return $self->furl->get($self->login_info_api, [],
+    $self->furl->get($self->login_info_api, [],
         [ api_key => $self->api_key, auth_key => $self->auth_key ],
     );
+}
+
+sub _get {
+    my $self = shift;
+    my $res = $self->furl->get(@_);
+    return $self->xmls->XMLin($res->content) if $res->is_success;
 }
 
 1;
